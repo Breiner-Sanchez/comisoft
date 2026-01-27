@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API Aprendices</title>
+</head>
+<body>
+    <h1>Test API Aprendices</h1>
+    <button onclick="testAPI()">Probar API</button>
+    <div id="resultado"></div>
+
+    <script>
+    function testAPI() {
+        const fichaId = 1; // ID de la ficha 231231
+        const url = `/fichas/${fichaId}/aprendices`;
+        
+        document.getElementById('resultado').innerHTML = `<p>Probando URL: ${url}</p>`;
+        
+        fetch(url)
+            .then(res => {
+                document.getElementById('resultado').innerHTML += `<p>Status: ${res.status}</p>`;
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('resultado').innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            })
+            .catch(error => {
+                document.getElementById('resultado').innerHTML += `<p style="color:red;">Error: ${error}</p>`;
+            });
+    }
+    </script>
+</body>
+</html>
