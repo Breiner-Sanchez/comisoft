@@ -100,6 +100,15 @@
                                     <a href="{{ route('actas.pdf', $acta) }}" class="action-btn danger" target="_blank" title="Descargar PDF">
                                         <i class="fas fa-file-pdf"></i>
                                     </a>
+                                    @if(Auth::user()->isCoordinacion())
+                                    <form action="{{ route('actas.destroy', $acta) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Está seguro de eliminar esta acta?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="action-btn text-danger bg-danger bg-opacity-10" title="Eliminar">
+                                            <i class="fas fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

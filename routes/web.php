@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ActaController;
 use App\Http\Controllers\FichaController;
 use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,12 @@ Route::middleware('auth')->group(function () {
     Route::get('fichas/{ficha}/aprendices/create', [FichaController::class, 'createAprendiz'])->name('fichas.aprendices.create');
     Route::post('fichas/{ficha}/aprendices', [FichaController::class, 'storeAprendiz'])->name('fichas.aprendices.store');
     Route::delete('aprendices/{aprendiz}', [FichaController::class, 'destroyAprendiz'])->name('aprendices.destroy');
+
+    // Rutas de Usuarios (Solo Coordinación)
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::post('users', [UserController::class, 'store'])->name('users.store');
+    Route::patch('users/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
+    Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

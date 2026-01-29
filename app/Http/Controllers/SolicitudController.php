@@ -11,12 +11,18 @@ class SolicitudController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('role:coordinacion')->only(['reject', 'destroy']);
     }
 
     public function index()
     {
-        $solicitudes = Solicitud::with('user')
-            ->orderBy('created_at', 'desc')
+        $query = Solicitud::with('user');
+
+        if (Auth::user()->isInstructor()) {
+            $query->where('user_id', Auth::id());
+        }
+
+        $solicitudes = $query->orderBy('created_at', 'desc')
             ->paginate(10);
         return view('solicitudes.index', compact('solicitudes'));
     }
@@ -66,6 +72,9 @@ class SolicitudController extends Controller
 
     public function show(Solicitud $solicitud)
     {
+        if (Auth::user()->isInstructor() && $solicitud->user_id !== Auth::id()) {
+            abort(403, 'No tienes permiso para ver esta solicitud.');
+        }
         return view('solicitudes.show', compact('solicitud'));
     }
 
@@ -73,5 +82,14 @@ class SolicitudController extends Controller
     {
         $solicitud->update(['estado' => 'rechazada']);
         return redirect()->route('solicitudes.index')->with('success', 'Solicitud rechazada correctamente');
+    }
+
+    public function destroy(Solicitud $solicitud)
+    {
+        if ($solicitud->evidencia_archivo && \Storage::disk('public')->exists($solicitud->evidencia_archivo)) {
+            \Storage::disk('public')->delete($solicitud->evidencia_archivo);
+        }
+        $solicitud->delete();
+        return redirect()->route('solicitudes.index')->with('success', 'Solicitud eliminada correctamente');
     }
 }

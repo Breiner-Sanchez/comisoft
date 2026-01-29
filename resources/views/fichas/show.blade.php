@@ -112,6 +112,7 @@
                                     </span>
                                 </td>
                                 <td class="px-5 text-end">
+                                    @if(Auth::user()->isCoordinacion())
                                     <form action="{{ route('aprendices.destroy', $aprendiz) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
@@ -119,6 +120,7 @@
                                             <i class="fas fa-trash-can"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

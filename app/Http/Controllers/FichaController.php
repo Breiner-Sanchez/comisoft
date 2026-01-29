@@ -11,6 +11,7 @@ class FichaController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('role:coordinacion')->only(['destroy', 'destroyAprendiz']);
     }
 
     public function index()

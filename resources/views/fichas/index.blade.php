@@ -64,6 +64,7 @@
                                                     <i class="fas fa-eye me-2 text-info"></i> Ver Detalles
                                                 </a>
                                             </li>
+                                            @if(Auth::user()->isCoordinacion())
                                             <li>
                                                 <a class="dropdown-item rounded-3 py-2" href="{{ route('fichas.edit', $ficha) }}">
                                                     <i class="fas fa-pen-to-square me-2 text-warning"></i> Editar Ficha
@@ -79,6 +80,7 @@
                                                     </button>
                                                 </form>
                                             </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </td>

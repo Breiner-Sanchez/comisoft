@@ -170,25 +170,32 @@
             letter-spacing: -0.01em;
         }
         .user-info {
-            background: #f1f5f9;
-            padding: 5px 5px 5px 14px; /* Reducido */
-            border-radius: 50px;
-            transition: all 0.2s;
-            border: 1px solid transparent;
+            background: white;
+            padding: 6px 6px 6px 16px;
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
         }
         .user-info:hover {
-            background: #e2e8f0;
+            background: #f8fafc;
             border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .user-info .name .user-name {
-            font-size: 0.8rem; /* Reducido de 0.85rem */
+            font-size: 0.85rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #0f172a;
+            line-height: 1.2;
         }
         .user-info .name .user-role {
-            font-size: 0.65rem; /* Reducido de 0.7rem */
-            color: #64748b;
+            font-size: 0.7rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
         }
 
         /* Ajuste del contenido principal */
@@ -231,7 +238,13 @@
             min-width: 200px !important;
         }
         .dropdown-item {
-            padding: 0.4rem 1rem !important; /* Reducido */
+            padding: 0.75rem 1rem !important;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #f1f5f9 !important;
+            transform: translateX(4px);
         }
         
         /* Avatar más pequeño */
@@ -311,6 +324,7 @@
                         </ul>
                     </li>
 
+                    @if(Auth::user()->isCoordinacion())
                     <li>
                         <a href="#reporteSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <i class="fas fa-chart-pie"></i> Reportes y Stats
@@ -323,6 +337,14 @@
                             </li>
                         </ul>
                     </li>
+
+                    <div class="section-header">Seguridad</div>
+                    <li class="{{ Request::is('users*') ? 'active' : '' }}">
+                        <a href="{{ route('users.index') }}">
+                            <i class="fas fa-user-shield"></i> Gestión de Usuarios
+                        </a>
+                    </li>
+                    @endif
                 </ul>
             </nav>
             @endauth
@@ -333,27 +355,39 @@
                 <!-- Topbar -->
                 <nav class="topbar">
                     <div class="title d-none d-md-block">Sistema de Gestión ComiSoft</div>
-                    <div class="user-info dropdown shadow-sm border">
-                        <div class="name d-none d-sm-block">
-                            <span class="user-name">{{ Auth::user()->name }}</span>
-                            <span class="user-role">Administrador del Sistema</span>
+                    <div class="user-info dropdown shadow-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="name d-none d-sm-block text-end me-3">
+                            <span class="user-name d-block">{{ Auth::user()->name }}</span>
+                            <span class="user-role {{ Auth::user()->isCoordinacion() ? 'text-primary' : 'text-muted' }}">
+                                {{ Auth::user()->isCoordinacion() ? 'Coordinación' : 'Instructor' }}
+                            </span>
                         </div>
-                        <a class="nav-link dropdown-toggle p-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="ms-3 rounded-circle bg-primary d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 36px; height: 36px;">
-                                <i class="fas fa-user-tie"></i>
-                            </div>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 animate__animated animate__fadeIn">
-                            <li class="px-3 py-2 border-bottom mb-2 d-md-none">
-                                <div class="fw-bold small text-muted text-uppercase">Usuario</div>
-                                <div class="fw-bold">{{ Auth::user()->name }}</div>
+                        <div class="ms-1 rounded-circle bg-primary d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 38px; height: 38px;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3 p-2 rounded-4 animate__animated animate__fadeInUp" style="min-width: 220px;">
+                            <li class="px-3 py-3 border-bottom mb-2 bg-light rounded-top-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-user-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark small" style="line-height: 1.2;">{{ Auth::user()->name }}</div>
+                                        <div class="text-muted" style="font-size: 0.65rem;">{{ Auth::user()->email }}</div>
+                                    </div>
+                                </div>
                             </li>
                             <li>
-                                <a class="dropdown-item py-2" href="{{ route('logout') }}"
+                                <a class="dropdown-item py-2 rounded-3" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                  document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-power-off fa-sm fa-fw me-3 text-danger"></i>
-                                    Cerrar Sesión
+                                    <div class="d-flex align-items-center text-danger">
+                                        <div class="bg-danger bg-opacity-10 p-2 rounded-3 me-3">
+                                            <i class="fas fa-power-off fa-fw"></i>
+                                        </div>
+                                        <span class="fw-bold">Cerrar Sesión</span>
+                                    </div>
                                 </a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
@@ -364,33 +398,7 @@
                 </nav>
                 @endauth
 
-                @guest
-                <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-                    <div class="container">
-                        <a class="navbar-brand" href="{{ url('/') }}">
-                            {{ config('app.name', 'Laravel') }}
-                        </a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
 
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav ms-auto">
-                                @if (Route::has('login'))
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                    </li>
-                                @endif
-                                @if (Route::has('register'))
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                    </li>
-                                @endif
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-                @endguest
 
                 <main class="container-fluid px-4">
                     @yield('content')

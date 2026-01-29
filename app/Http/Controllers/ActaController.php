@@ -13,13 +13,19 @@ class ActaController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('role:coordinacion')->only(['destroy']);
     }
 
     public function index()
     {
-        $actas = Acta::with('solicitud')
-            ->whereIn('estado', ['borrador', 'final'])
-            ->orderBy('created_at', 'desc')
+        $query = Acta::with('solicitud')
+            ->whereIn('estado', ['borrador', 'final']);
+
+        if (Auth::user()->isInstructor()) {
+            $query->where('user_id', Auth::id());
+        }
+
+        $actas = $query->orderBy('created_at', 'desc')
             ->paginate(10);
         return view('actas.index', compact('actas'));
     }
@@ -113,12 +119,18 @@ class ActaController extends Controller
 
     public function show(Acta $acta)
     {
+        if (Auth::user()->isInstructor() && $acta->user_id !== Auth::id()) {
+            abort(403, 'No tienes permiso para ver esta acta.');
+        }
         $acta->load('solicitud');
         return view('actas.show', compact('acta'));
     }
 
     public function edit(Acta $acta)
     {
+        if (Auth::user()->isInstructor() && $acta->user_id !== Auth::id()) {
+            abort(403, 'No tienes permiso para editar esta acta.');
+        }
         $fichas = \App\Models\Ficha::all();
         $acta->load('solicitud');
         return view('actas.edit', compact('acta', 'fichas'));
@@ -126,6 +138,9 @@ class ActaController extends Controller
 
     public function update(Request $request, Acta $acta)
     {
+        if (Auth::user()->isInstructor() && $acta->user_id !== Auth::id()) {
+            abort(403, 'No tienes permiso para actualizar esta acta.');
+        }
         $request->validate([
             'acta_numero'   => 'required',
             'acta_año'      => 'required',
@@ -198,6 +213,9 @@ class ActaController extends Controller
 
     public function pdf(Acta $acta)
     {
+        if (Auth::user()->isInstructor() && $acta->user_id !== Auth::id()) {
+            abort(403, 'No tienes permiso para ver el PDF de esta acta.');
+        }
         $acta->load('solicitud');
         $pdf = \PDF::loadView('actas.pdf', compact('acta'))
             ->setPaper('A4', 'portrait');
@@ -211,5 +229,14 @@ class ActaController extends Controller
     {
         $aprendices = \App\Models\Aprendiz::where('ficha_id', $id)->get();
         return response()->json($aprendices);
+    }
+
+    public function destroy(Acta $acta)
+    {
+        if ($acta->evidencia_asistentes && \Storage::disk('public')->exists($acta->evidencia_asistentes)) {
+            \Storage::disk('public')->delete($acta->evidencia_asistentes);
+        }
+        $acta->delete();
+        return redirect()->route('actas.index')->with('success', 'Acta eliminada correctamente');
     }
 }

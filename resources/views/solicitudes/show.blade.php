@@ -25,13 +25,15 @@
                     <a href="{{ route('solicitudes.index') }}" class="btn btn-light rounded-3 border">
                         <i class="fas fa-arrow-left me-1"></i> Volver
                     </a>
-                    @if($solicitud->estado == 'pendiente')
+                    @if($solicitud->estado == 'pendiente' && Auth::user()->isCoordinacion())
                     <form action="{{ route('solicitudes.reject', $solicitud) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-outline-danger rounded-3 px-4 fw-bold" onclick="return confirm('¿Está seguro de rechazar esta solicitud?')">
                             <i class="fas fa-times-circle me-1"></i> Rechazar
                         </button>
                     </form>
+                    @endif
+                    @if($solicitud->estado == 'pendiente')
                     <a href="{{ route('actas.create.solicitud', $solicitud) }}" class="btn btn-primary rounded-3 px-4 shadow-sm fw-bold">
                         <i class="fas fa-file-medical me-1"></i> Generar Acta de Comité
                     </a>

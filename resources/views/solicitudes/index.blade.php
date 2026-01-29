@@ -84,6 +84,23 @@
                                     <a href="{{ route('actas.create.solicitud', $solicitud) }}" class="action-btn success" title="Generar Acta">
                                         <i class="fas fa-file-medical"></i>
                                     </a>
+                                    @if(Auth::user()->isCoordinacion())
+                                    <form action="{{ route('solicitudes.reject', $solicitud) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="action-btn text-warning bg-warning bg-opacity-10" title="Rechazar">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                    @endif
+                                    @if(Auth::user()->isCoordinacion())
+                                    <form action="{{ route('solicitudes.destroy', $solicitud) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Está seguro de eliminar esta solicitud?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="action-btn text-danger bg-danger bg-opacity-10" title="Eliminar">
+                                            <i class="fas fa-trash-can"></i>
+                                        </button>
+                                    </form>
                                     @endif
                                 </div>
                             </td>
